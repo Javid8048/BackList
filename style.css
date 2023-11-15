@@ -312,6 +312,7 @@
   
   .operations__tab--active {
     transform: translateY(-66%);
+    filter: drop-shadow(2px 4px 6px black);
   }
   
   .operations__content {
