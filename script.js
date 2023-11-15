@@ -12,6 +12,7 @@ const btnScrollTo = document.querySelector(".btn--scroll-to")
 
 const header = document.querySelector(".header");
 const section1 = document.querySelector("#section--1");
+const section = document.querySelectorAll(".section")
 const cookieMessage = document.querySelector(".cookie-message");
 const nav = document.querySelector(".nav");
 const TabsContainer = document.querySelector(".operations__tab-container");
@@ -27,13 +28,13 @@ const closeModal = function () {
   modal.classList.add('hidden');
   overlay.classList.add('hidden');
 };
-const handelHover = function(e) {
-  if(e.target.classList.contains("nav__link")) {
+const handelHover = function (e) {
+  if (e.target.classList.contains("nav__link")) {
     let link = e.target;
     let sibling = link.closest(".nav").querySelectorAll(".nav__link");
     let logo = link.closest(".nav").querySelector("img");
     sibling.forEach(el => {
-      if(el !== link) el.style.opacity = this
+      if (el !== link) el.style.opacity = this
     });
     logo.style.opacity = this;
   }
@@ -98,3 +99,45 @@ TabsContainer.addEventListener("click", e => {
 });
 
 
+const stickyNav = (entries) => {
+  if (!entries[0].isIntersecting) nav.classList.add("sticky");
+  else nav.classList.remove("sticky");
+};
+const obsOption = {
+  root: null,
+  threshold: 0,
+  rootMargin: `-${nav.getBoundingClientRect().height}px`
+}
+const headerObserver = new IntersectionObserver(stickyNav, obsOption);
+headerObserver.observe(header);
+
+
+const obsOption2 = { root: null, threshold: 0.17 };
+const revealSec = function (entries, observe) {
+  const [entry] = entries;
+  console.log(entry.target);
+  entry.target.classList.remove("section--hidden");
+  revealSection.unobserve(entry.target)
+}
+const revealSection = new IntersectionObserver(revealSec, obsOption2);
+section.forEach(sec => {
+  revealSection.observe(sec);
+  sec.classList.add("section--hidden");
+});
+
+
+// remove lazy-img
+const lazyImg = document.querySelectorAll("img[data-src]");
+const imgLoaderCallback = (entries, observe) => {
+  const [entry] = entries;
+  entry.target.src = entry.target.dataset.src;
+  entry.target.addEventListener("load", function() {
+    entry.target.classList.remove("lazy-img");
+  });
+  observe.unobserve(entry.target);
+};
+const obsOption3 = { root: null, threshold: 0 }
+const imgLoader = new IntersectionObserver(imgLoaderCallback, obsOption3);
+lazyImg.forEach(img => {
+  imgLoader.observe(img);
+})
